@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
-import MeCab
-import re
-import jaconv
 import unicodedata
+
+import MeCab
+import jaconv
 
 
 def is_kanji(ch):
-    return 'CJK UNIFIED IDEOGRAPH' in unicodedata.name(ch)
+    return "CJK UNIFIED IDEOGRAPH" in unicodedata.name(ch)
 
 
 def is_hiragana(ch):
-    return 'HIRAGANA' in unicodedata.name(ch)
+    return "HIRAGANA" in unicodedata.name(ch)
 
 
 def split_okurigana_reverse(text, hiragana):
@@ -46,13 +46,13 @@ def split_okurigana(text, hiragana):
                 text.pop(0)
                 if ret[0]:
                     if is_kanji(ret[0]):
-                        yield ret[0], ''.join(ret[1][:-1])
+                        yield ret[0], "".join(ret[1][:-1])
                         yield (ret[1][-1],)
                     else:
                         yield (ret[0],)
                 else:
                     yield (hira,)
-                ret = ('', [])
+                ret = ("", [])
                 if text and text[0] == hira:
                     text.pop(0)
                 break
@@ -60,12 +60,12 @@ def split_okurigana(text, hiragana):
                 if is_kanji(char):
                     if ret[1] and hira == ret[1][-1]:
                         text.pop(0)
-                        yield ret[0], ''.join(ret[1][:-1])
+                        yield ret[0], "".join(ret[1][:-1])
                         yield char, hira
-                        ret = ('', [])
+                        ret = ("", [])
                         text.pop(0)
                     else:
-                        ret = (char, ret[1]+[hira])
+                        ret = (char, ret[1] + [hira])
                 else:
                     # char is also hiragana
                     if hira != char:
@@ -83,22 +83,22 @@ def split_furigana(text):
     It seems like MeCab has bug in releasing resource
     """
     mecab = MeCab.Tagger("-Ochasen")
-    mecab.parse('') # 空でパースする必要がある
+    mecab.parse("")  # 空でパースする必要がある
     node = mecab.parseToNode(text)
     ret = []
 
     while node is not None:
-        origin = node.surface # もとの単語を代入
+        origin = node.surface  # もとの単語を代入
         if not origin:
             node = node.next
             continue
 
         # originが空のとき、漢字以外の時はふりがなを振る必要がないのでそのまま出力する
         if origin != "" and any(is_kanji(_) for _ in origin):
-            #sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
-            #bypass it and give kanji as isto avoid IndexError
+            # sometimes MeCab can't give kanji reading, and make node-feature have less than 7 when splitted.
+            # bypass it and give kanji as isto avoid IndexError
             if len(node.feature.split(",")) > 7:
-                kana = node.feature.split(",")[7] # 読み仮名を代入
+                kana = node.feature.split(",")[7]  # 読み仮名を代入
             else:
                 kana = node.surface
             hiragana = jaconv.kata2hira(kana)
@@ -113,23 +113,22 @@ def split_furigana(text):
 
 def print_html(text):
     for pair in split_furigana(text):
-        if len(pair)==2:
-            kanji,hira = pair
-            print("<ruby><rb>{0}</rb><rt>{1}</rt></ruby>".
-                    format(kanji, hira), end='')
+        if len(pair) == 2:
+            kanji, hira = pair
+            print(f"<ruby><rb>{kanji}</rb><rt>{hira}</rt></ruby>", end="")
         else:
-            print(pair[0], end='')
-    print('')
+            print(pair[0], end="")
+    print("")
 
 
 def print_plaintext(text):
     for pair in split_furigana(text):
-        if len(pair)==2:
-            kanji,hira = pair
-            print("%s(%s)" % (kanja,hira), end='')
+        if len(pair) == 2:
+            kanji, hira = pair
+            print("%s(%s)" % (kanji, hira), end="")
         else:
-            print(pair[0], end='')
-    print('')
+            print(pair[0], end="")
+    print("")
 
 
 def main():
@@ -137,6 +136,5 @@ def main():
     print_html(text)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
