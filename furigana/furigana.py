@@ -115,7 +115,7 @@ def print_html(text):
     for pair in split_furigana(text):
         if len(pair) == 2:
             kanji, hira = pair
-            print(f"<ruby><rb>{kanji}</rb><rt>{hira}</rt></ruby>", end="")
+            print(f"<ruby>{kanji}<rt>{hira}</rt></ruby>", end="")
         else:
             print(pair[0], end="")
     print("")
