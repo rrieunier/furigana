@@ -35,7 +35,8 @@ class Furigana:
         ```
         It seems like MeCab has bug in releasing resource
         """
-        return [c if is_hiragana(c) else (c, jaconv.kata2hira(c.feature.pron)) for c in self.tagger(text)]
+        return [c.surface if is_hiragana(c.surface) else (c.surface, jaconv.kata2hira(c.feature.pron)) for c in
+                self.tagger(text)]
 
     def to_html(self, text):
         html = ""
