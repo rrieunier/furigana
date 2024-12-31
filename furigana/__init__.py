@@ -13,3 +13,6 @@ def main():
             print(f"{kanji}({hira})")
         else:
             print(pair[0])
+
+
+VERSION = "0.0.8"
