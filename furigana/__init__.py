@@ -1,3 +1,3 @@
-from .furigana import Furigana, is_hiragana, is_kanji
+from .furigana import Furigana, is_hiragana, is_kanji, is_japanese, is_katakana
 
-VERSION = "0.0.8"
+VERSION = "0.0.9"
